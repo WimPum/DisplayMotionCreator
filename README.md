@@ -5,6 +5,8 @@ MMDElectone supports working display through motion, and this project is for mak
 
 This program was made using Python, PySimpleGUI and nuitka(for compiling.)-->
 
+![Preview](screenshot.png "preview")
+
 MMDElectone専用のモーション生成ツール「DisplayMotionCreator」
 <!--MMDElectoneはこちらで配布しています。(LINK)<br>-->
 MMDElectoneは小節/ビートをモーションを使って表示できて、これはそのモーション作成を自動化することができます。<br>
