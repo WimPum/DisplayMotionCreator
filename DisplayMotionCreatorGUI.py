@@ -16,10 +16,14 @@ layout = [[sg.Push(), sg.Text("MMDElectone", font="20"), sg.Push()],
           [sg.Push(), sg.Text("テンポ画面用Motion生成器", font="20"), sg.Push()],
           [sg.InputText("テンポを入力", key="tempo", font="16", tooltip="BPMを入力してください。"), sg.Text(
               "bpm", font="20")],
-          [sg.InputText("拍子を入力", key="timsig", font="16", tooltip="拍子を整数で入力してください。4分の4なら'4',4分の3なら'3'と入力"), sg.Text(
+          [sg.InputText("拍子を入力", key="timsig", font="16", tooltip="拍子を整数で入力してください。\n4分の4なら'4',4分の3なら'3'と入力"), sg.Text(
               "拍", font="20")],
           [sg.InputText("長さを入力", key="length", font="16", tooltip="モーションの長さを秒単位で入力してください。"), sg.Text(
               "秒", font="20")],
+          [sg.InputText("開始フレーム位置を入力", key="startframe", font="16", tooltip="変更がない場合はデフォルトは0です。"), sg.Text(
+              "frame", font="20")],
+          [sg.InputText("開始小節番号を入力(1以上)", key="startbar", font="16", tooltip="1以上を入力してください。\n変更がない場合はデフォルトは1です。"), sg.Text(
+              "小節目", font="20")],
           [sg.InputText("出力先を選択", key="output", font="16", tooltip="右のボタンを押し出力先を選択"),
            sg.FolderBrowse("open", key="open", font="20")],
           [sg.Push(), sg.Button("実行！", key="ok", font="20"), sg.Push()]]
@@ -39,14 +43,26 @@ while True:
                 raise TypeError
             if int(values["timsig"]) < 1 or int(values["timsig"]) > 9:
                 raise ValueRangeError
+            if values["startbar"] != "開始小節番号を入力(1以上)" and int(values["startbar"]) < 1:
+                raise ValueError
             DMC.keyframes = []
             DMC.totalKeys = 0
+
             tempo = float(values["tempo"])
             timsig = int(values["timsig"])
             length = float(values["length"])
+
+            if values["startframe"] == "開始フレーム位置を入力":
+                startframe = 0
+            else:
+                startframe = int(values["startframe"])
+            if values["startbar"] == "開始小節番号を入力(1以上)":
+                startbar = 1
+            else:
+                startbar = int(values["startbar"])
             directory = values["output"]
 
-            VMDList = DMC.vmd_calc(30, tempo, timsig, length)
+            VMDList = DMC.vmd_calc(30, tempo, timsig, length, startframe, startbar)  # the core
             osName = platform.system()
             print(f"Platform: {osName}")
             if osName == "Windows":
