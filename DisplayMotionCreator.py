@@ -108,6 +108,37 @@ def vmd_writer(filename, keyframes):  # vmd_calcではリスト生成のみ "a"�
         writer.writerows(keyframes)
 
 
+def vmd_cleaner(keyframes):
+    maxKeyNums = keyframes[3][0]
+    # print(f"keycount: {maxKeyNums}")
+    delKeyNums = 0
+    index = 0
+    while index < maxKeyNums:
+        try:
+            localList = keyframes[index + 4].copy()
+            # pprint(localList)
+
+            nextFrame = int(localList[1]) + 1
+            localList[1] = nextFrame  # １フレーム先
+            # pprint(localList)
+            if localList in keyframes[(index + 5):]: # 後ろを探すため　スライス index + 4にはないから
+                # リストのインデックス取得
+                localIndex = keyframes[(index + 5):].index(localList) + index + 4 # 果たして見つけられるんだろうか？
+                del keyframes[index + 4]
+                # print(f"localIndex: {localIndex}")
+                del keyframes[localIndex]
+                delKeyNums += 2
+                # print(f"deleted {delKeyNums} keys")
+            #else:
+            #    print("DIDNT delete keys")
+            index += 1
+        except IndexError:
+            break
+    print(f"deleted {delKeyNums} keys")
+    keyframes[3][0] = int(maxKeyNums - delKeyNums)
+    return keyframes
+
+
 def vmd_calc(mmdFps, bpm, timSig: int, length, startFrame: int, startBar: int):
     # (bpm / 60)は1秒に幾つのノートがあるか(bps)
     keyframesheader = [
@@ -133,7 +164,7 @@ def vmd_calc(mmdFps, bpm, timSig: int, length, startFrame: int, startBar: int):
     for x in range(totalNotes):
         sigValue = int((x) / timSig) + startBar  # これが10や100を超えたらキーが増える
         sigDisp = float(f"{sigValue}.{x % timSig + 1}")  # 16.2とかX.x(拍子)綺麗な方
-        print(sigValue)
+        # print(sigValue)
         currentTime = currentFrames / mmdFps
         print(f"{roundedFrames}f, {sigDisp}, {currentTime}s")
 
@@ -221,13 +252,15 @@ def vmd_calc(mmdFps, bpm, timSig: int, length, startFrame: int, startBar: int):
         totalKeys += 10
     keyframesheader += [[totalKeys]]  # 全キー数入れる
     keyframesheader += keyframes
-    print(f"TotalNotes:{totalNotes}, TotalKeys:{totalKeys}")
-    return keyframesheader
+    print(f"TotalNotes:{totalNotes}, rawTotalKeys:{totalKeys}")
+    keyframesCleaned = vmd_cleaner(keyframesheader)  # クリーンアップを行います
+    totalKeys = int(keyframesCleaned[3][0])
+    print(f"TotalKeys:{totalKeys}")
+    return keyframesCleaned
 
 
 # MMDキーフレームのFPS, テンポ, 拍子, 長さ(秒)からキーフレームを打つべき場所を求める。
 # そして開始フレームと開始拍子番号を指定できます
 if __name__ == "__main__":
-    # vmd_writer("output.csv", vmd_calc(30, 60, 4, 120, 0, 111))  # 本体 CSV書き出し用
-    C2V.write_vmd_file("outputExp.vmd", vmd_calc(
-        30, 60, 3, 120, 60, 90))  # 本体 VMD書き出し
+    # vmd_writer("output.csv", vmd_calc(30, 60, 4, 20, 0, 111))  # 本体 CSV書き出し用
+    C2V.write_vmd_file("outputExp.vmd", vmd_calc(30, 60, 3, 120, 60, 90))  # 本体 VMD書き出し

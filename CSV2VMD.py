@@ -18,7 +18,7 @@ def write_vmd_file(filename, keyframes):
 
     # skin keypoints
     totalKeys = int(keyframes[3][0])
-    fout.write(struct.pack('<L', totalKeys))  # モーフのキー数 # //!５行目
+    fout.write(struct.pack('<L', totalKeys))  # モーフのキー数 #!５行目
 
     for x in range(totalKeys):  # 各キーポイントの情報を格納 xはゼロから始まる
         """
@@ -27,11 +27,11 @@ def write_vmd_file(filename, keyframes):
         print(keyframes[4 + x][2])
         """
         keyName = (keyframes[4 + x][0]).encode()
-        fout.write(keyName)  # モーフ名 # //! 1st
+        fout.write(keyName)  # モーフ名 #! 1st
         # モーフ名15Byteの残りを\0で埋める
         fout.write(bytearray([0 for i in range(len(keyName), 15)]))
-        fout.write(struct.pack('<L', keyframes[4 + x][1]))  # フレーム番号 # //! 2nd
-        # パラメータ(0~1) # //! 3rd
+        fout.write(struct.pack('<L', keyframes[4 + x][1]))  # フレーム番号 #! 2nd
+        # パラメータ(0~1) #! 3rd
         fout.write(struct.pack('<f', keyframes[4 + x][2]))
 
     fout.close()
