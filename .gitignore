@@ -21,3 +21,6 @@ psc_DisplayMotionCreatorGUI_tmp/DisplayMotionCreator/localpycs/pyimod01_archive.
 psc_DisplayMotionCreatorGUI_tmp/DisplayMotionCreator/localpycs/pyimod02_importers.pyc
 psc_DisplayMotionCreatorGUI_tmp/DisplayMotionCreator/localpycs/pyimod03_ctypes.pyc
 psc_DisplayMotionCreatorGUI_tmp/DisplayMotionCreator/localpycs/struct.pyc
+output.csv
+outputExp.vmd
+outputExpDecoded.csv

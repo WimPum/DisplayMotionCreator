@@ -262,5 +262,6 @@ def vmd_calc(mmdFps, bpm, timSig: int, length, startFrame: int, startBar: int):
 # MMDキーフレームのFPS, テンポ, 拍子, 長さ(秒)からキーフレームを打つべき場所を求める。
 # そして開始フレームと開始拍子番号を指定できます
 if __name__ == "__main__":
-    # vmd_writer("output.csv", vmd_calc(30, 60, 4, 20, 0, 111))  # 本体 CSV書き出し用
+    # vmd_writer("output.csv", vmd_calc(30, 60, 3, 120, 60, 90))  # 本体 CSV書き出し用
     C2V.write_vmd_file("outputExp.vmd", vmd_calc(30, 60, 3, 120, 60, 90))  # 本体 VMD書き出し
+    # vmd_writer("outputExpDecoded.csv",C2V.vmd_to_csv("outputExp.vmd"))

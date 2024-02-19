@@ -5,7 +5,7 @@
 # モーフ用です
 
 import struct
-
+from pprint import pprint
 
 def write_vmd_file(filename, keyframes):
 
@@ -35,3 +35,37 @@ def write_vmd_file(filename, keyframes):
         fout.write(struct.pack('<f', keyframes[4 + x][2]))
 
     fout.close()
+
+
+# モーフのみのVMDをCSVに変換する
+# 参考: https://daizyu.com/posts/2020-08-08-002/
+def vmd_to_csv(vmdname):
+    file = open(vmdname, "rb")
+    binaryData = file.read()
+    # print(binaryData)
+    header = str(struct.unpack_from("<30sx", binaryData, 0)[0].decode()).replace("\x00", "")  # <はリトルエンディアン char 30byte
+    if header != "Vocaloid Motion Data 0002\x00\x00\x00\x00\x00":
+        print("THIS IS NOT A VMD FILE")
+    modelName = struct.unpack_from("<20s", binaryData, 30)[0].decode() # 30byte目から読み込み
+    boneCount, morphCount = struct.unpack_from("<II", binaryData, 50)
+    keyframesheader = [
+        [header, 0],
+        [modelName],
+        [boneCount],
+        [morphCount]
+    ]
+    keyframes = [] # これが二次元配列になるやつ
+    for x in range(morphCount):
+        keyname, frame, value = struct.unpack_from("<15sLf", binaryData, 58+23*x)
+        keyname = str(keyname.decode()).replace("\x00", "")
+        keyframes += [[keyname, frame, value]]
+    returnKey = keyframesheader + keyframes
+    pprint(returnKey)
+    return returnKey
+
+
+if __name__ == "__main__":
+    try:
+        vmd_to_csv("outputExp.vmd")
+    except FileNotFoundError:
+        print("outputExp.vmd not found. Quitting")
